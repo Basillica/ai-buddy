@@ -1,0 +1,15 @@
+#div1 {
+    width: 90px;
+    height: 60px;
+    padding: 1px;
+    border: 1px dotted #aaaaaa;
+    margin: 5px;
+}
+.container {
+    display: flex;
+    justify-content: center;
+}
+
+.item {
+    width: 100px;
+}

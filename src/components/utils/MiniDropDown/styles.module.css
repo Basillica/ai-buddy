@@ -1,0 +1,15 @@
+.container{
+    width: 141px; padding: 16px; background: white; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.10); border-radius: 8px; flex-direction: column; justify-content: center; align-items: flex-start; gap: 8px; display: inline-flex;
+}
+
+.item_div{
+    height: 40px; width: 100%; padding: 12px; border-radius: 4px; justify-content: flex-start; align-items: center; gap: 4px; display: inline-flex;
+}
+.item_div:hover{
+    cursor: pointer;
+    background-color: rgba(161, 153, 153, 0.1);
+}
+
+.text_style{
+    color: #111111; font-size: 16px; font-family: Segoe UI; font-weight: 400; word-wrap: break-word;
+}

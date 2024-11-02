@@ -1,0 +1,43 @@
+.user_parameter_div {
+    flex: 1 1 0;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 8px;
+    display: inline-flex;
+}
+.user_param_innver_div {
+    justify-content: flex-start;
+    align-items: center;
+    gap: 4px;
+    display: inline-flex;
+}
+.user_param_text {
+    text-align: center;
+    color: #111111;
+    font-size: 16px;
+    font-family: Segoe UI;
+    font-weight: 600;
+    word-wrap: break-word;
+}
+.user_param_icon {
+    width: 15px;
+    height: 15px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+.navigation {
+    padding: 8px;
+    border-radius: 4px;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 4px;
+    display: flex;
+    border: none;
+    background: white;
+}
+
+.navigation:hover {
+    cursor: pointer;
+}

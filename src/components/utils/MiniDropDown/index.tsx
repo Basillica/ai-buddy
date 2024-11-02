@@ -1,0 +1,1 @@
+export { default as MiniDropDown } from './main'

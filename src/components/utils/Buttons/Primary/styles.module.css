@@ -1,0 +1,31 @@
+.container {
+    min-width: 121px;
+    height: 40px;
+
+    padding-left: 16px;
+    padding-right: 16px;
+    background: #005ab4;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    border-radius: 4px;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    display: inline-flex;
+}
+.container:disabled {
+    background: rgba(0, 90, 180, 0.25);
+}
+
+.container:hover:enabled {
+    background: #00a0d2;
+}
+
+.button_text {
+    text-align: center;
+    color: white;
+    font-size: 14px;
+    font-family: Segoe UI;
+    font-weight: 400;
+    word-wrap: break-word;
+}

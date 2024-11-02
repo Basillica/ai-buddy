@@ -1,0 +1,26 @@
+.navbar {
+    overflow: hidden;
+    background-color: #2d6eb8;
+    height: 25px;
+    border-radius: 10px;
+}
+
+.navbar a {
+    float: left;
+    font-size: 12px;
+    color: white;
+    text-align: center;
+    padding: 7px 10px;
+    text-decoration: none;
+}
+
+.subnav {
+    float: left;
+    overflow: hidden;
+}
+
+.navbar a:hover,
+.subnav:hover {
+    background-color: rgb(56, 101, 185);
+    border-radius: 2px;
+}

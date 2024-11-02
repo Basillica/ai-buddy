@@ -1,0 +1,18 @@
+.nav_button {
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-radius: 4px;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 4px;
+    display: flex;
+    border: none;
+    background-color: white;
+}
+
+.nav_button:hover {
+    cursor: pointer;
+    background-color: rgb(224, 221, 221);
+}

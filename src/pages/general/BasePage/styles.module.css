@@ -1,0 +1,46 @@
+.menu_button {
+    align-self: stretch;
+    height: 25px;
+    padding: 12px;
+    border-radius: 4px;
+    justify-content: space-between;
+    align-items: center;
+    display: inline-flex;
+    background-color: rgb(138, 147, 156);
+    border: none;
+}
+
+.sub_menu_button {
+    align-self: stretch;
+    height: 20px;
+    padding: 12px;
+    border-radius: 4px;
+    justify-content: space-between;
+    align-items: center;
+    display: inline-flex;
+    background-color: rgb(78, 104, 148);
+    border: none;
+}
+
+.menu_button:hover {
+    cursor: pointer;
+    border: none;
+    background-color: grey;
+}
+
+.collapse_menu {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    display: flex;
+    border: none;
+    background-color: #acafbb;
+}
+
+.collapse_menu:hover {
+    cursor: pointer;
+    border: none;
+}

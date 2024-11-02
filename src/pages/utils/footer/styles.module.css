@@ -1,0 +1,28 @@
+.main_area {
+    height: 24px;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100vw;
+    display: inline-flex;
+    background: #005ab4;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.span_text {
+    text-align: center;
+    color: white;
+    font-size: 10px;
+    font-family: Segoe UI;
+    font-weight: 600;
+    word-wrap: break-word;
+    padding-left: 10px;
+}
+.container {
+    justify-content: flex-start;
+    align-items: center;
+    gap: 24px;
+    display: flex;
+    margin-right: 2%;
+}

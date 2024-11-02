@@ -1,0 +1,31 @@
+.button {
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  border-radius: 4px;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  display: inline-flex;
+}
+
+.button:enabled:hover {
+  background-color: rgba(204, 204, 204, 0.25);
+}
+.button:enabled .button_text {
+  color: rgba(0, 90, 180, 1);
+}
+
+.button:disabled .button_text {
+  color: rgba(17, 17, 17, 0.25);
+}
+
+.button_text {
+  text-align: center;
+  color: #111111;
+  font-size: 14px;
+  font-family: Segoe UI;
+  font-weight: 400;
+  word-wrap: break-word;
+}

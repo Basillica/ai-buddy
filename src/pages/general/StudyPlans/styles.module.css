@@ -1,0 +1,96 @@
+.card {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+    width: 180px;
+    height: 250px;
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
+.container {
+    padding: 2px 16px;
+}
+
+.card_container {
+    align-self: stretch;
+    flex: 1 1 0;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 12px;
+    display: flex;
+    flex: 0 0 12%;
+    margin: 10px;
+}
+
+.file_upload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.button_container {
+    min-width: 100px;
+    height: 30px;
+    background: #92aeca;
+    border-radius: 4px;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    display: inline-flex;
+}
+
+.button_container:hover {
+    background: #00a0d2;
+}
+
+.pdf_image {
+    width: 100px;
+    padding-left: 20px;
+}
+
+.pdf_image:hover {
+    cursor: pointer;
+}
+
+.options {
+}
+
+.options:hover {
+    cursor: pointer;
+}
+
+.menu_button {
+    align-self: stretch;
+    height: 25px;
+    padding: 12px;
+    border-radius: 4px;
+    justify-content: space-between;
+    align-items: center;
+    display: inline-flex;
+    background-color: rgba(138, 147, 156, 0.5);
+    border: none;
+}
+
+.menu_button:hover {
+    cursor: pointer;
+    background-color: rgba(138, 147, 156, 0.7);
+}
+
+.option_overlay {
+    display: flex;
+    position: fixed;
+    top: 50;
+    left: 50;
+    z-index: 50;
+    justify-content: center;
+    align-items: center;
+    width: 6%;
+    height: 10%;
+    background-color: #c6e7ff;
+    border-radius: 20px;
+    padding: 10px;
+}
