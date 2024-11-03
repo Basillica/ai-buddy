@@ -22,5 +22,4 @@ This template should help get you started developing with Tauri, Solid and Types
 -   plugins
 -   evnets
 -   streaming and token stream
-
-## C:\Users\anthony.ezeabasili\AppData\Roaming\com.xpertaccountant.app
+-   C:\Users\anthony.ezeabasili\AppData\Roaming\com.xpertaccountant.app

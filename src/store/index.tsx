@@ -1,11 +1,12 @@
 import { createContext, useContext, JSX, createSignal, createEffect, onCleanup } from "solid-js";
-import { AccountContextType } from "./account";
+import { ReadingPlanContextType } from "./plans";
 import { UserContextType } from "./user";
-import { Notification } from "../models";
+import { Notification, StudyPlan } from "../models";
 import { UtilsContextType } from "./utils";
+import { User } from "@supabase/supabase-js";
 
 interface AppBaseContextType {
-    accountCtx: AccountContextType;
+    planCtx: ReadingPlanContextType;
     userCtx: UserContextType;
     utilsCtx: UtilsContextType;
 }
@@ -13,13 +14,13 @@ interface AppBaseContextType {
 const BaseAppContext = createContext<AppBaseContextType | null>(null);
 
 export const BaseAppProvider = (props: { children: JSX.Element }) => {
-    const [user, setUser] = createSignal("");
+    const [authUser, setAuthUser] = createSignal<User>();
     const [notify, setNotify] = createSignal<Notification>({
         message_type: "",
         message: "",
         has_message: false,
     });
-    const [account, setAccount] = createSignal("");
+    const [readingPlan, setReadingPlan] = createSignal<StudyPlan[]>();
 
     createEffect(() => {
         if (notify().has_message) {
@@ -39,13 +40,13 @@ export const BaseAppProvider = (props: { children: JSX.Element }) => {
     return (
         <BaseAppContext.Provider
             value={{
-                accountCtx: {
-                    account,
-                    setAccount,
+                planCtx: {
+                    readingPlan,
+                    setReadingPlan,
                 },
                 userCtx: {
-                    user,
-                    setUser,
+                    authUser,
+                    setAuthUser,
                 },
                 utilsCtx: {
                     notify,

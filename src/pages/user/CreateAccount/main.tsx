@@ -4,8 +4,11 @@ import { Footer } from "../../utils";
 import logo from "../../../assets/logo.svg";
 import { InputField } from "../../../components/utils";
 import styles from "./styles.module.css";
+import { AnimationRenderer } from "../../../components/utils";
+import animationData from "../../../assets/animation/loading.json";
 import { ErrorNotification, SuccessNotification } from "../../../components/Notifications";
 import { UserAPIHandler } from "../../../supabase";
+import { UserModel } from "../../../models";
 
 type Notification = {
     message_type: "SUCCESS" | "ERROR" | "";
@@ -13,23 +16,32 @@ type Notification = {
     has_message: boolean;
 };
 
+type NewAccountForm = {
+    firstname: string;
+    lastname: string;
+    email: string;
+    password: string;
+    phone: string;
+    display_name: string;
+};
+
 const App: Component = () => {
     const userApi = new UserAPIHandler();
     const navigate = useNavigate();
     const [formError, setFormError] = createSignal<boolean>(false);
+    const [loading, setLoading] = createSignal(false);
     const [notify, setNotify] = createSignal<Notification>({
         message_type: "",
         message: "",
         has_message: false,
     });
-    const [formValues, setFormValues] = createSignal<{
-        username: string;
-        password: string;
-        newPassword: string;
-    }>({
-        username: "",
+    const [formValues, setFormValues] = createSignal<NewAccountForm>({
+        firstname: "",
+        lastname: "",
+        email: "",
         password: "",
-        newPassword: "",
+        phone: "",
+        display_name: "",
     });
 
     const regex = /[^A-Za-z0-9]/;
@@ -38,6 +50,15 @@ const App: Component = () => {
 
     const validateEmail = (email: string) => {
         return String(email).toLowerCase().match(emailRegex);
+    };
+
+    const emptySubmission = (obj: NewAccountForm) => {
+        for (const value of Object.values(obj)) {
+            if (value !== "") {
+                return false; // If any value is not empty, return false
+            }
+        }
+        return true; // If all values are empty, return true
     };
 
     onMount(async () => {
@@ -49,8 +70,18 @@ const App: Component = () => {
         console.log(user, "the frigging user");
     });
 
-    const signIn = async () => {
-        if (formValues().username.length === 0) {
+    const createAccount = async () => {
+        if (emptySubmission(formValues())) {
+            setNotify({
+                message_type: "ERROR",
+                message: "please fill out the form to proceed",
+                has_message: true,
+            });
+            setFormError(true);
+            return;
+        }
+
+        if (formValues().email.length === 0) {
             setNotify({
                 message_type: "ERROR",
                 message: "please provide a valid email address",
@@ -60,7 +91,7 @@ const App: Component = () => {
             return;
         }
 
-        if (!validateEmail(formValues().username)) {
+        if (!validateEmail(formValues().email)) {
             setNotify({
                 message_type: "ERROR",
                 message: "the provided email address is wrong",
@@ -79,11 +110,24 @@ const App: Component = () => {
             return;
         }
 
-        const res = await userApi.signIn(formValues().username, formValues().password);
+        setLoading(true);
+        const newUser: UserModel = {
+            first_name: formValues().firstname,
+            last_name: formValues().lastname,
+            email: formValues().email,
+            password: formValues().password,
+            display_name: formValues().display_name,
+            is_active: false,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            payment_plan: "BASIC",
+        };
+        const res = await userApi.createUser(newUser);
         if (res) {
             console.log(res.user, "----------");
             navigate("/home");
         }
+        setLoading(false);
     };
 
     createEffect(() => {
@@ -127,19 +171,15 @@ const App: Component = () => {
                                 <div style="align-self: stretch; text-align: center; color: #005AB4; font-size: 36px; font-family: Segoe UI; font-weight: 600; line-height: 46.80px; word-wrap: break-word">
                                     Welcome to
                                     <br />
-                                    ExpertAccountant®
-                                </div>
-                                <div style="align-self: stretch; text-align: center; color: rgba(0, 0, 0, 0.80); font-size: 16px; font-family: Segoe UI; font-weight: 400; word-wrap: break-word">
-                                    Simplifying accounting
-                                    <br />
-                                    for performant organisations
+                                    AI Buddy
                                 </div>
                             </div>
-                            <div style="align-self: stretch; height: 192px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 20px; display: flex; ">
-                                <SignInComponent
+                            <div style="align-self: stretch; height: 252px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 20px; display: flex; ">
+                                <NewAccountComponent
                                     formValues={formValues}
                                     setFormValues={setFormValues}
                                     formError={formError}
+                                    loading={loading}
                                 />
 
                                 <div style="align-self: stretch; justify-content: flex-end; align-items: center; gap: 16px; display: inline-flex; margin-top: 40px;">
@@ -148,7 +188,7 @@ const App: Component = () => {
                                             Forgot password?
                                         </div>
                                     </button>
-                                    <button class={styles.sign_in} onClick={() => signIn()}>
+                                    <button class={styles.sign_in} onClick={() => createAccount()}>
                                         <div style="width: 15px; height: 15px; justify-content: center; align-items: center; display: flex">
                                             <svg
                                                 width="13"
@@ -164,36 +204,12 @@ const App: Component = () => {
                                             </svg>
                                         </div>
                                         <div style="text-align: center; color: white; font-size: 14px; font-family: Segoe UI; font-weight: 400; word-wrap: break-word">
-                                            Sign in
+                                            Create New Account
                                         </div>
                                     </button>
                                 </div>
                             </div>
                         </div>
-                        <button
-                            class={styles.request_account}
-                            style={"margin-top: 20px"}
-                            onClick={() => navigate("/createaccount")}
-                        >
-                            <div style="width: 12px; justify-content: center; align-items: center; display: flex">
-                                <svg
-                                    width="16"
-                                    height="13"
-                                    viewBox="0 0 16 13"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        d="M5.75 1.25C4.92969 1.25 4.20312 1.69531 3.78125 2.375C3.38281 3.07812 3.38281 3.94531 3.78125 4.625C4.20312 5.32812 4.92969 5.75 5.75 5.75C6.54688 5.75 7.27344 5.32812 7.69531 4.625C8.09375 3.94531 8.09375 3.07812 7.69531 2.375C7.27344 1.69531 6.54688 1.25 5.75 1.25ZM5.75 6.5C4.67188 6.5 3.6875 5.9375 3.14844 5C2.60938 4.08594 2.60938 2.9375 3.14844 2C3.6875 1.08594 4.67188 0.5 5.75 0.5C6.80469 0.5 7.78906 1.08594 8.32812 2C8.86719 2.9375 8.86719 4.08594 8.32812 5C7.78906 5.9375 6.80469 6.5 5.75 6.5ZM4.67188 8.375C2.79688 8.375 1.27344 9.89844 1.25 11.75H10.25C10.2031 9.89844 8.67969 8.375 6.80469 8.375H4.67188ZM4.67188 7.625H6.80469C9.125 7.625 11 9.5 11 11.8203C11 12.1953 10.6719 12.5 10.2969 12.5H1.17969C0.804688 12.5 0.5 12.1953 0.5 11.8203C0.5 9.5 2.35156 7.625 4.67188 7.625ZM12.5 7.625V5.75H10.625C10.4141 5.75 10.25 5.58594 10.25 5.375C10.25 5.1875 10.4141 5 10.625 5H12.5V3.125C12.5 2.9375 12.6641 2.75 12.875 2.75C13.0625 2.75 13.25 2.9375 13.25 3.125V5H15.125C15.3125 5 15.5 5.1875 15.5 5.375C15.5 5.58594 15.3125 5.75 15.125 5.75H13.25V7.625C13.25 7.83594 13.0625 8 12.875 8C12.6641 8 12.5 7.83594 12.5 7.625Z"
-                                        fill="black"
-                                        fill-opacity="0.8"
-                                    />
-                                </svg>
-                            </div>
-                            <span style="text-align: center; color: rgba(0, 0, 0, 0.80); font-size: 14px; font-family: Segoe UI; font-weight: 400; word-wrap: break-word">
-                                Create new account
-                            </span>
-                        </button>
                     </div>
                     <div style="flex: 1 1 0; align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 20px; display: inline-flex; margin-top: 20px">
                         <div style="align-self: stretch; flex: 1 1 0; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 20px; display: flex">
@@ -205,19 +221,19 @@ const App: Component = () => {
                                         </a>
                                         <div style="align-self: stretch; height: 139px; flex-direction: column; justify-content: center; align-items: flex-start; gap: 8px; display: flex">
                                             <a style="align-self: stretch; color: rgba(0, 0, 0, 0.80); font-size: 16px; font-family: Segoe UI; font-weight: 400; line-height: 21.60px; word-wrap: break-word">
-                                                General ledger for financial transactions
+                                                Everything document processing at scale
                                             </a>
                                             <div style="align-self: stretch; height: 1px; background: rgba(204, 204, 204, 0.25)"></div>
                                             <a style="align-self: stretch; color: rgba(0, 0, 0, 0.80); font-size: 16px; font-family: Segoe UI; font-weight: 400; line-height: 21.60px; word-wrap: break-word">
-                                                Efficiently manage invoices and payments
+                                                Efficiently interaction with your documents
                                             </a>
                                             <div style="align-self: stretch; height: 1px; background: rgba(204, 204, 204, 0.25)"></div>
                                             <a style="align-self: stretch; color: rgba(0, 0, 0, 0.80); font-size: 16px; font-family: Segoe UI; font-weight: 400; line-height: 21.60px; word-wrap: break-word">
-                                                Process payroll according to local compliance laws
+                                                Consume large volumes of data at your convinience
                                             </a>
                                             <div style="align-self: stretch; height: 1px; background: rgba(204, 204, 204, 0.25)"></div>
                                             <a style="align-self: stretch; color: rgba(0, 0, 0, 0.80); font-size: 16px; font-family: Segoe UI; font-weight: 400; line-height: 21.60px; word-wrap: break-word">
-                                                Financial reporting and budgeting etc
+                                                Make studying interactive and fun as should
                                             </a>
                                         </div>
                                     </div>
@@ -234,7 +250,7 @@ const App: Component = () => {
                                 <div style="align-self: stretch; justify-content: flex-start; align-items: flex-start; gap: 20px; display: inline-flex">
                                     <div style="flex: 1 1 0; align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 16px; display: inline-flex">
                                         <div style="align-self: stretch; color: black; font-size: 20px; font-family: Segoe UI; font-weight: 600; word-wrap: break-word">
-                                            Learn more about XpatAccounting
+                                            Learn more about AI Buddy
                                         </div>
                                         <div style="align-self: stretch; height: 73px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 8px; display: flex">
                                             <div style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 8px; display: inline-flex">
@@ -308,62 +324,102 @@ const App: Component = () => {
 
 export default App;
 
-export const SignInComponent: Component<{
-    formValues: Accessor<{
-        username: string;
-        password: string;
-        newPassword: string;
-    }>;
-    setFormValues: Setter<{
-        username: string;
-        password: string;
-        newPassword: string;
-    }>;
+export const NewAccountComponent: Component<{
+    formValues: Accessor<NewAccountForm>;
+    setFormValues: Setter<NewAccountForm>;
     formError: Accessor<boolean>;
+    loading: Accessor<boolean>;
 }> = (props) => {
     const [showPassword, setShowPassword] = createSignal(false);
 
     return (
         <>
-            <div style="align-self: stretch; height: 106px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 16px; display: flex">
-                <div style={"height: 25px; width: 345px; margin-bottom: 10px"}>
-                    <InputField
-                        label="Username"
-                        name="username"
-                        type="text"
-                        value={props.formValues().username}
-                        oldState={props.formValues}
-                        updater={props.setFormValues}
-                        formError={props.formError}
-                    />
+            {props.loading() ? (
+                <div style="align-self: stretch; height: 156px; width: 480px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 16px; display: flex;">
+                    <div style="padding-top: 10vh; margin-left: 10vw; width: 4vw; height: 4vh; left: 50vw">
+                        <AnimationRenderer animationData={animationData} />
+                    </div>
                 </div>
-                <div style={"height: 25px; width: 345px; margin-bottom: 10px; padding-top: 10px;"}>
-                    <InputField
-                        label="Password"
-                        name="password"
-                        type={showPassword() ? "text" : "password"}
-                        value={props.formValues().password}
-                        oldState={props.formValues}
-                        updater={props.setFormValues}
-                        formError={props.formError}
-                    />
-                </div>
+            ) : (
+                <div style="align-self: stretch; height: 156px; width: 480px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 16px; display: flex;">
+                    <div style="align-self: stretch; display: flex; margin-bottom: 10px; gap: 30px; width: 460px; height:20px">
+                        <InputField
+                            label="Firstname"
+                            name="firstname"
+                            type="text"
+                            value={props.formValues().firstname}
+                            oldState={props.formValues}
+                            updater={props.setFormValues}
+                            formError={props.formError}
+                        />
 
-                <div style="align-self: stretch; height: 25px; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
-                    <div style="height: 26px; padding-left: 4px; padding-right: 4px; padding-top: 10px; border-radius: 4px; justify-content: flex-start; align-items: center; display: inline-flex">
-                        <div style="justify-content: flex-start; align-items: center; gap: 4px; display: flex">
-                            <input
-                                type="checkbox"
-                                id="scales"
-                                name="scales"
-                                checked={showPassword()}
-                                onChange={() => setShowPassword(!showPassword())}
-                            />
-                            <label for="scales">Show Password</label>
+                        <InputField
+                            label="Lastname"
+                            name="lastname"
+                            type="text"
+                            value={props.formValues().lastname}
+                            oldState={props.formValues}
+                            updater={props.setFormValues}
+                            formError={props.formError}
+                        />
+                    </div>
+                    <div style="align-self: stretch; display: flex; margin-bottom: 10px; gap: 30px; width: 460px; height:20px">
+                        <InputField
+                            label="Email"
+                            name="email"
+                            type="text"
+                            value={props.formValues().email}
+                            oldState={props.formValues}
+                            updater={props.setFormValues}
+                            formError={props.formError}
+                        />
+                        <InputField
+                            label="Password"
+                            name="password"
+                            type={showPassword() ? "text" : "password"}
+                            value={props.formValues().password}
+                            oldState={props.formValues}
+                            updater={props.setFormValues}
+                            formError={props.formError}
+                        />
+                    </div>
+                    <div style="align-self: stretch; display: flex; margin-bottom: 10px; gap: 30px; width: 460px; height:20px">
+                        <InputField
+                            label="Phone Number"
+                            name="phone"
+                            type="tel"
+                            value={props.formValues().phone}
+                            oldState={props.formValues}
+                            updater={props.setFormValues}
+                            formError={props.formError}
+                        />
+                        <InputField
+                            label="Display Name"
+                            name="display_name"
+                            type="text"
+                            value={props.formValues().display_name}
+                            oldState={props.formValues}
+                            updater={props.setFormValues}
+                            formError={props.formError}
+                        />
+                    </div>
+
+                    <div style="align-self: stretch; height: 25px; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+                        <div style="height: 26px; padding-left: 4px; padding-right: 4px; padding-top: 10px; border-radius: 4px; justify-content: flex-start; align-items: center; display: inline-flex">
+                            <div style="justify-content: flex-start; align-items: center; gap: 4px; display: flex">
+                                <input
+                                    type="checkbox"
+                                    id="scales"
+                                    name="scales"
+                                    checked={showPassword()}
+                                    onChange={() => setShowPassword(!showPassword())}
+                                />
+                                <label for="scales">Show Password</label>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
         </>
     );
 };

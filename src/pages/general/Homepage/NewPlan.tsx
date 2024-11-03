@@ -2,12 +2,18 @@ import { Component, createSignal, Setter, Accessor } from "solid-js";
 import { InputField, PrimaryButton, SecondaryButton } from "../../../components/utils";
 import { TableAPIHandler } from "../../../supabase";
 import { StudyPlan } from "../../../models";
+import { useAppContext } from "../../../store";
 
 export const NewPlan: Component<{
     setNewPlan: Setter<boolean>;
     setStudyPlans: Setter<StudyPlan[]>;
     studyPlans: Accessor<StudyPlan[]>;
 }> = (props) => {
+    const {
+        userCtx: { authUser },
+        planCtx: { setReadingPlan },
+    } = useAppContext();
+
     const [formError, setFormError] = createSignal<boolean>(false);
     const [formValues, setFormValues] = createSignal<{
         name: string;
@@ -28,10 +34,12 @@ export const NewPlan: Component<{
                 name: formValues().name,
                 category: formValues().category,
                 progres: 0,
+                creator: authUser()?.id,
             },
         ]);
         if (res) {
             props.setStudyPlans([...props.studyPlans(), ...res]);
+            setReadingPlan([...props.studyPlans(), ...res]);
             props.setNewPlan(false);
         }
     };

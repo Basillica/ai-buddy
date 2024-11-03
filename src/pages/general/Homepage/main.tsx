@@ -1,48 +1,58 @@
-import { Component, createResource, createSignal, For } from "solid-js";
+import { Component, createResource, createSignal, For, onMount } from "solid-js";
 import { FaSolidArrowDownAZ } from "solid-icons/fa";
 import { AnimationRenderer, BreadCrumb, PrimaryButton, SearchField } from "../../../components/utils";
 import animationData from "../../../assets/animation/loading.json";
-import { pipeline } from "@huggingface/transformers";
-import { TableAPIHandler } from "../../../supabase";
+// import { pipeline } from "@huggingface/transformers";
+import { TableAPIHandler, UserAPIHandler } from "../../../supabase";
 import { PlanRow } from "../../../components/plans";
 import { StudyPlan } from "../../../models";
 import { NewPlan } from "./NewPlan";
+import { useAppContext } from "../../../store";
+import { User } from "@supabase/supabase-js";
 
 const App: Component = () => {
-    const fetchPlans = async () => {
+    const {
+        userCtx: { setAuthUser, authUser },
+        planCtx: { readingPlan, setReadingPlan },
+    } = useAppContext();
+
+    const fetchPlans = async (user: User) => {
         const api = new TableAPIHandler("plans");
-        const res = await api.getAll();
-        if (res) setStudyPlans(res);
+        const res = await api.getForCondition("creator", user.id);
+        if (res) {
+            setStudyPlans(res);
+            setReadingPlan(res);
+        }
         return res;
     };
 
-    const insertEmbedding = async () => {
-        const title = "First post!";
-        const body = "Hello world!";
-        // const generateEmbedding = await pipeline("feature-extraction", "Supabase/gte-small");
-        // let pipe = await pipeline("sentiment-analysis", "Xenova/distilbert-base-uncased-finetuned-sst-2-english");
-        // let out = await pipe("I love transformers!");
-        // console.log(out, "the frigging out");
-        // https://huggingface.co/docs/transformers.js/en/index
-        const pipe = await pipeline("feature-extraction");
-        const output = await pipe(body, {
-            pooling: "mean",
-            normalize: true,
-        });
-        const embedding = Array.from(output.data);
-        const api = new TableAPIHandler("vectors");
-        const res = await api.insertRows([
-            {
-                title,
-                body,
-                embedding,
-            },
-        ]);
-        if (res) console.log(res);
-    };
+    // const insertEmbedding = async () => {
+    //     const title = "First post!";
+    //     const body = "Hello world!";
+    //     // const generateEmbedding = await pipeline("feature-extraction", "Supabase/gte-small");
+    //     // let pipe = await pipeline("sentiment-analysis", "Xenova/distilbert-base-uncased-finetuned-sst-2-english");
+    //     // let out = await pipe("I love transformers!");
+    //     // console.log(out, "the frigging out");
+    //     // https://huggingface.co/docs/transformers.js/en/index
+    //     const pipe = await pipeline("feature-extraction");
+    //     const output = await pipe(body, {
+    //         pooling: "mean",
+    //         normalize: true,
+    //     });
+    //     const embedding = Array.from(output.data);
+    //     const api = new TableAPIHandler("vectors");
+    //     const res = await api.insertRows([
+    //         {
+    //             title,
+    //             body,
+    //             embedding,
+    //         },
+    //     ]);
+    //     if (res) console.log(res);
+    // };
 
-    const [userPlans] = createResource(fetchPlans);
-    const [studyPlans, setStudyPlans] = createSignal<StudyPlan[]>([]);
+    const [userPlans] = createResource(authUser, fetchPlans);
+    const [studyPlans, setStudyPlans] = createSignal<StudyPlan[]>(readingPlan()!);
     const [newPlan, setNewPlan] = createSignal<boolean>(false);
 
     const onInputChange = (
@@ -62,6 +72,13 @@ const App: Component = () => {
             )
         );
     };
+
+    onMount(async () => {
+        if (authUser()) return;
+        const api = new UserAPIHandler();
+        const user = await api.getUser();
+        if (user) setAuthUser(user);
+    });
 
     return (
         <div style="width: 100%; min-height: 100%; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 28px; display: inline-flex">

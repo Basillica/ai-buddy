@@ -10,11 +10,8 @@ export type UserModel = {
     first_name: string;
     last_name: string;
     email: string;
-    role: string;
-    scope: string;
-    organisation_name: string;
+    display_name: string;
     is_active: boolean;
-    organisation_id: string;
     password: string;
     id?: string;
 };
@@ -26,6 +23,7 @@ export type StudyPlan = {
     name: string;
     category: string;
     progres: number;
+    creator: string;
 };
 
 export interface ChatRoomModel {

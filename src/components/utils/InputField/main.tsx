@@ -11,6 +11,7 @@ const App: Component<{
     formError: Accessor<boolean>;
     disable?: boolean;
     style?: string;
+    pattern?: string;
 }> = (props) => {
     const onInputChange = (
         e: InputEvent & {
@@ -36,6 +37,7 @@ const App: Component<{
                 onInput={(e) => onInputChange(e)}
                 disabled={props.disable}
                 type={props.type}
+                pattern={props.pattern}
                 required
             />
             {props.formError() && props.value.length < 2 && (

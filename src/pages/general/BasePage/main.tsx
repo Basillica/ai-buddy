@@ -1,4 +1,4 @@
-import { Component, createSignal, onMount } from "solid-js";
+import { Component, createSignal } from "solid-js";
 import { FiChevronRight } from "solid-icons/fi";
 import { VsAccount } from "solid-icons/vs";
 import { BaseAppProvider } from "../../../store";
@@ -13,42 +13,42 @@ import { BsBarChart } from "solid-icons/bs";
 import { BsPlusCircle, BsBuildingsFill } from "solid-icons/bs";
 import { SiHelpdesk, SiMinutemailer } from "solid-icons/si";
 import { AiOutlineTransaction } from "solid-icons/ai";
-import Database from "@tauri-apps/plugin-sql";
-import { createStore } from "@tauri-apps/plugin-store";
+// import Database from "@tauri-apps/plugin-sql";
+// import { createStore } from "@tauri-apps/plugin-store";
 import { Footer } from "../../utils";
 import styles from "./styles.module.css";
 
 const App: Component = () => {
-    onMount(async () => {
-        /// database
-        const db = await Database.load("sqlite:xpertaccountant.db");
-        try {
-            const result = await db.execute(
-                "INSERT INTO users (id, firstname, lastname, email, password, username) VALUES ('anotherboringid', 'anthony', 'etienne', 'test@user.com', 'password', 'basillica');"
-            );
-            console.log(result);
-        } catch (error) {
-            const result = await db.select("SELECT * FROM users;");
-            console.log("the users result", result);
-        }
+    // onMount(async () => {
+    //     /// database
+    //     const db = await Database.load("sqlite:xpertaccountant.db");
+    //     try {
+    //         const result = await db.execute(
+    //             "INSERT INTO users (id, firstname, lastname, email, password, username) VALUES ('anotherboringid', 'anthony', 'etienne', 'test@user.com', 'password', 'basillica');"
+    //         );
+    //         console.log(result);
+    //     } catch (error) {
+    //         const result = await db.select("SELECT * FROM users;");
+    //         console.log("the users result", result);
+    //     }
 
-        /// store
-        const store = await createStore("xpertaccountant.bin", {
-            // we can save automatically after each store modification
-            // autoSave: true,
-        });
-        // Set a value.
-        await store.set("some_key", { value: 5 });
-        // Get a value.
-        const val = await store.get<{ value: number }>("some_key");
-        console.log(val); // { value: 5 }
-        const val2 = await store.get<{ value: boolean }>("init");
-        console.log(val2); // { value: 5 }
+    //     /// store
+    //     const store = await createStore("xpertaccountant.bin", {
+    //         // we can save automatically after each store modification
+    //         // autoSave: true,
+    //     });
+    //     // Set a value.
+    //     await store.set("some_key", { value: 5 });
+    //     // Get a value.
+    //     const val = await store.get<{ value: number }>("some_key");
+    //     console.log(val); // { value: 5 }
+    //     const val2 = await store.get<{ value: boolean }>("init");
+    //     console.log(val2); // { value: 5 }
 
-        // You can manually save the store after making changes.
-        // Otherwise, it will save upon graceful exit as described above.
-        await store.save();
-    });
+    //     // You can manually save the store after making changes.
+    //     // Otherwise, it will save upon graceful exit as described above.
+    //     await store.save();
+    // });
 
     return (
         <div style="width: 100%; min-height: 100%; display: flex; flex-direction: column;-ms-overflow-style: none; scrollbar-width: none; overflow-x: clip;">

@@ -1,6 +1,7 @@
 import { Setter, Accessor } from "solid-js";
+import { User } from "@supabase/supabase-js";
 
 export interface UserContextType {
-    user: Accessor<string>;
-    setUser: Setter<string>;
+    authUser: Accessor<User | undefined>;
+    setAuthUser: Setter<User | undefined>;
 }
